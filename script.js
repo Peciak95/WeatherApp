@@ -2,20 +2,20 @@ const searchInput = document.querySelector('.search-input')
 const searchBtn = document.querySelector('.search-btn')
 const error = document.querySelector('.error')
 
+const localTime = document.querySelector('.local-time')
 const cityName = document.querySelector('.city-name')
 const station = document.querySelector('.weather-station')
 const temperature = document.querySelector('.temperature')
-
 const description = document.querySelector('.description')
 
 const nextHoursArrow = document.querySelector('.next-hours')
 const previousHoursArrow = document.querySelector('.previous-hours')
 
-const hourlyTemperatures = document.querySelectorAll('.temp')
-const hours = document.querySelectorAll('.hour')
-const weatherStatus = document.querySelectorAll('.status')
-const dayOfTheWeek = document.querySelectorAll('.week')
 const weatherBars = document.querySelectorAll('.weather-bar')
+const hours = document.querySelectorAll('.hour')
+const dayOfTheWeek = document.querySelectorAll('.week')
+const weatherStatus = document.querySelectorAll('.status')
+const hourlyTemperatures = document.querySelectorAll('.temp')
 
 const GEO_LINK = 'http://api.openweathermap.org/geo/1.0/direct?q='
 const GEO_LIMIT = '&limit='
@@ -39,12 +39,13 @@ let step = hoursIndex + visibleHoursCount
 
 let enable = false
 let delay
+
 const checkEmptyInput = () => {
 	if (searchInput.value === '') {
 		error.textContent = 'Fill in the empty field'
-		error.style.display = 'inline'
+		error.style.visibility = 'visible'
 	} else {
-		error.style.display = 'none'
+		error.style.visibility = 'hidden'
 		getCityName()
 	}
 }
@@ -85,22 +86,34 @@ const getHoursWeather = (lat, lon) => {
 	axios.get(HOURS_API_URL).then(res => {
 		const localTimeZone = res.data.city.timezone
 		// console.log(res.data)
-		const timeDifference = (localTimeZone - myTimeZone) / 3600
-
+		const hourDifference = (localTimeZone - myTimeZone) / 3600
+		const minutesDifference = (localTimeZone - myTimeZone) / 60
+		// console.log(res);
+		console.log(hourDifference)
+		console.log(minutesDifference);
 		for (let i = 0; i < TIME_STEP_NUMBER; i++) {
 			const hour = res.data.list[i].dt
 			const date = new Date(hour * 1000)
 			const weatherIcon = Object.assign({}, res.data.list[i].weather[0])
 			const icon = weatherIcon.icon
 			const temp = Math.floor(res.data.list[i].main.temp)
-			// console.log(temp)
-			const weekDay = addHoursToDate(date, timeDifference).getDay()
 
-			hours[i].textContent = addHoursToDate(date, timeDifference).getHours() + ':00'
+			const weekDay = addHoursToDate(date, hourDifference).getDay()
+
+			hours[i].textContent = addHoursToDate(date, hourDifference).getHours() + ':00'
 			weatherStatus[i].setAttribute('src', `http://openweathermap.org/img/wn/${icon}@2x.png`)
 			hourlyTemperatures[i].textContent = `${temp}℃`
 			function addHoursToDate(date, hours) {
 				return new Date(new Date(date).setHours(date.getHours() + hours))
+			}
+
+			function addMinutesToDate(date, minutes) {
+				return new Date(new Date(date).setMinutes(date.getMinutes() + minutes))
+			}
+
+			if (i === 0) {
+				const now = new Date()
+				localTime.textContent = addHoursToDate(now, hourDifference).getHours() + ':' + addMinutesToDate(now, minutesDifference).getMinutes()
 			}
 
 			switch (weekDay) {
@@ -221,8 +234,6 @@ previousHoursArrow.addEventListener('click', () => {
 searchInput.addEventListener('keyup', e => {
 	if (e.key === 'Enter') {
 		checkEmptyInput()
-	} else {
-		return
 	}
 })
 searchBtn.addEventListener('click', checkEmptyInput)

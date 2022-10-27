@@ -26,10 +26,7 @@ body {
 	align-items: center;
 	margin: 0 auto;
 	padding: 1em;
-	background: linear-gradient(0deg, rgba(135,206,235,1) 25%, rgba(0,191,255,1) 75%);
-	/* background-image: url('/img/storm-desktop.jpg'); */
-	background-size: cover;
-	background-position: center;
+	background: linear-gradient(0deg, rgba(135, 206, 235, 1) 25%, rgba(0, 191, 255, 1) 75%);
 	width: 100%;
 	height: 100%;
 	max-width: 1440px;
@@ -40,17 +37,17 @@ body {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, .1);
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	/* ten bgc w jsie do zmiany ciemnosci w zaleznosci do pory dnia */
 }
 .error {
 	color: rgb(222, 0, 0);
 	font-size: 1.3rem;
-	/* display: none; */
 	visibility: hidden;
 }
-.searcher {
+.search-engine {
 	padding: 1.8em;
 	text-align: center;
 }
@@ -69,28 +66,31 @@ body {
 	padding: 0.3em;
 	margin-right: 0.5em;
 	border: none;
-	/* border: 1px solid #fff; */
+	color: #ddd;
 	border-radius: 12px;
 }
-.search-input::placeholder{
-	color:rgba(255, 255, 255, 0.7);
+.search-input::placeholder {
+	color: rgba(255, 255, 255, 0.7);
 }
 .search-input:focus {
 	outline: 1px solid #ffffff80;
 }
 .search-btn {
-	width: 45px;
-	height: 100%;
+	/* width: 45px; */
+	/* height: 100%; */
 	background: none;
 	border: none;
 	cursor: pointer;
-	padding: 1em;
+	padding: 1.5em;
 	border-radius: 12px;
 }
 .search-btn i {
+	transition: transform 0.3s;
 	color: #ddd;
 	font-size: 1.5rem;
-	z-index: 10;
+}
+.search-btn:hover i {
+	transform: scale(1.2);
 }
 .search-btn:focus {
 	outline: 1px solid #ffffff80;
@@ -102,35 +102,56 @@ body {
 	align-items: center;
 }
 .weather-infos p {
-	margin-bottom: 0.5em;
+	margin-bottom: 0.5rem;
 }
-h3 {
+.times {
+	font-family: 'Stick No Bills', sans-serif;
+	font-size: 4rem;
+	letter-spacing: 2px;
 	text-transform: uppercase;
-	margin-bottom: 0.2em;
-	letter-spacing: 3px;
+}
+p.local-time {
+	margin-bottom: 1em;
+}
+.local-title {
 	font-size: 3rem;
 }
-.local-time{
-	font-size: 4rem;
+.region {
+	font-size: 1.5rem;
 }
 .city-name {
-	font-size: 1.5rem;
 	text-transform: uppercase;
 }
 .temperature {
-	font-size: 5rem;
+	font-family: 'Stick No Bills', sans-serif;
+	font-size: 4rem;
+	margin-top: 1em;
 }
-
 .description {
 	text-transform: capitalize;
 }
+.hourly-forecast {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.3);
+	border-radius: 48px;
+	padding: 0.5em;
+	width: 100%;
+	max-width: 772px;
+}
+
 .title {
 	width: 100%;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	font-size: 1.6rem;
 }
+
 .day-btn {
+	margin: 0.5em;
 	padding: 1em;
 	background: none;
 	border: none;
@@ -152,32 +173,17 @@ h3 {
 .day-btn:hover .arrow {
 	color: #fff;
 }
-.day-name {
-	font-size: 1.6rem;
-}
-.hourly-forecast {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-	background-color: rgba(0, 0, 0, 0.5);
-	border-radius: 48px;
-	padding: 0.5em;
-	width: 100%;
-	/* height: 250px; */
-}
+
 .hourly-infos {
 	width: 100%;
 	height: 100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	/* font-size: 1rem; */
-	/* color: #000; */
-	/* font-weight: bold; */
 	overflow: hidden;
 }
 .weather-bar {
+	font-family: 'Stick No Bills', sans-serif;
 	display: none;
 	flex-direction: column;
 	justify-content: center;
@@ -186,14 +192,24 @@ h3 {
 	font-size: 1.5rem;
 	margin-bottom: 1em;
 }
+.hour {
+	font-size: 1.8rem;
+	margin: 1em 0;
+}
+.status {
+	max-width: 100%;
+}
+.temp {
+	margin-bottom: 1em;
+}
 .active {
 	display: flex;
 }
-.move-left{
+.move-left {
 	animation-name: move-left;
 	animation-duration: 1s;
 }
-.move-right{
+.move-right {
 	animation-name: move-right;
 	animation-duration: 1s;
 }
@@ -214,23 +230,19 @@ h3 {
 		transform: translateX(0%);
 	}
 }
-.hour {
-	/* font-size: 1rem; */
-	font-size: 1.8rem;
-	margin: 1em 0;
-}
-.week {
-	font-size: 1.5rem;
-}
-.status {
-	max-width: 100%;
-}
-.temp {
-	font-size: 1.5rem;
-	margin-bottom: 1em;
-}
-.tomorrow {
-	display: flex;
-}
 
-/* @media  */
+@media (min-width: 576px) {
+
+}
+@media (min-width: 768px) {
+
+}
+@media (min-width: 992px) {
+
+}
+@media (min-width: 1200px) {
+
+}
+@media (min-width: 1400px) {
+
+}

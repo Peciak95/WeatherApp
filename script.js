@@ -34,7 +34,8 @@ const TIME_STEP_NUMBER = 8 //number of weather bars
 const myTimeZone = 7200
 
 let hoursIndex = 0
-const visibleHoursCount = 4
+const visibleBars = document.querySelectorAll('.active')
+const visibleHoursCount = visibleBars.length
 let step = hoursIndex + visibleHoursCount
 
 let enable = false

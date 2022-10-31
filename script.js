@@ -102,7 +102,7 @@ const getHoursWeather = (lat, lon) => {
 				const weekDay = addHoursToDate(date, hourDifference).getDay()
 
 				hours[i].textContent = addHoursToDate(date, hourDifference).getHours() + ':00'
-				weatherStatus[i].setAttribute('src', `http://openweathermap.org/img/wn/${icon}@2x.png`)
+				weatherStatus[i].setAttribute('src', `https://openweathermap.org/img/wn/${icon}@2x.png`)
 				hourlyTemperatures[i].textContent = `${temp}℃`
 				function addHoursToDate(date, hours) {
 					return new Date(new Date(date).setHours(date.getHours() + hours))

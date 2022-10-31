@@ -281,10 +281,13 @@ body {
 }
 @media (max-height: 400px) {
 	.search-engine{
-		font-size: .8rem;
+		font-size: 1rem;
 	}
 	.weather {
 		font-size: 1rem;
+	}
+	.error{
+		font-size: 1em;
 	}
 	.hourly-forecast{
 		font-size: 1rem;

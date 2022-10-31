@@ -2,6 +2,7 @@ const shadow = document.querySelector('.shadow')
 const searchInput = document.querySelector('.search-input')
 const searchBtn = document.querySelector('.search-btn')
 const error = document.querySelector('.error')
+const unknownError = document.querySelector('.unknown-error')
 
 const localTime = document.querySelector('.local-time')
 const cityName = document.querySelector('.city-name')
@@ -18,7 +19,7 @@ const dayOfTheWeek = document.querySelectorAll('.week')
 const weatherStatus = document.querySelectorAll('.status')
 const hourlyTemperatures = document.querySelectorAll('.temp')
 
-const GEO_LINK = 'http://api.openweathermap.org/geo/1.0/direct?q='
+const GEO_LINK = 'https://api.openweathermap.org/geo/1.0/direct?q='
 const GEO_LIMIT = '&limit='
 const LIMIT = '5'
 const APP_ID = '&appid='
@@ -65,7 +66,7 @@ const getCityName = () => {
 		})
 		.catch(() => {
 			error.textContent = "City doesn't exist"
-			error.style.display = 'inline'
+			error.style.visibility = 'visible'
 		})
 	searchInput.value = ''
 }
@@ -85,95 +86,102 @@ const getWeather = (lat, lon) => {
 
 const getHoursWeather = (lat, lon) => {
 	const HOURS_API_URL = HOURS_WEATHER_LINK + lat + API_LON + lon + TIME_STEP + TIME_STEP_NUMBER + APP_ID + KEY + UNITS
-	axios.get(HOURS_API_URL).then(res => {
-		const localTimeZone = res.data.city.timezone
-		const hourDifference = (localTimeZone - myTimeZone) / 3600
-		const minutesDifference = (localTimeZone - myTimeZone) / 60
-		for (let i = 0; i < TIME_STEP_NUMBER; i++) {
-			const hour = res.data.list[i].dt
-			const date = new Date(hour * 1000)
-			const weatherIcon = Object.assign({}, res.data.list[i].weather[0])
-			const icon = weatherIcon.icon
-			const temp = Math.floor(res.data.list[i].main.temp)
+	axios
+		.get(HOURS_API_URL)
+		.then(res => {
+			const localTimeZone = res.data.city.timezone
+			const hourDifference = (localTimeZone - myTimeZone) / 3600
+			const minutesDifference = (localTimeZone - myTimeZone) / 60
+			for (let i = 0; i < TIME_STEP_NUMBER; i++) {
+				const hour = res.data.list[i].dt
+				const date = new Date(hour * 1000)
+				const weatherIcon = Object.assign({}, res.data.list[i].weather[0])
+				const icon = weatherIcon.icon
+				const temp = Math.floor(res.data.list[i].main.temp)
 
-			const weekDay = addHoursToDate(date, hourDifference).getDay()
+				const weekDay = addHoursToDate(date, hourDifference).getDay()
 
-			hours[i].textContent = addHoursToDate(date, hourDifference).getHours() + ':00'
-			weatherStatus[i].setAttribute('src', `http://openweathermap.org/img/wn/${icon}@2x.png`)
-			hourlyTemperatures[i].textContent = `${temp}℃`
-			function addHoursToDate(date, hours) {
-				return new Date(new Date(date).setHours(date.getHours() + hours))
-			}
+				hours[i].textContent = addHoursToDate(date, hourDifference).getHours() + ':00'
+				weatherStatus[i].setAttribute('src', `http://openweathermap.org/img/wn/${icon}@2x.png`)
+				hourlyTemperatures[i].textContent = `${temp}℃`
+				function addHoursToDate(date, hours) {
+					return new Date(new Date(date).setHours(date.getHours() + hours))
+				}
 
-			function addMinutesToDate(date, minutes) {
-				return new Date(new Date(date).setMinutes(date.getMinutes() + minutes))
-			}
+				function addMinutesToDate(date, minutes) {
+					return new Date(new Date(date).setMinutes(date.getMinutes() + minutes))
+				}
 
-			if (i === 0) {
-				const now = new Date()
-				const shadowParameter = addHoursToDate(now, hourDifference).getHours()
-				changeShade(shadowParameter)
-				if (addMinutesToDate(now, minutesDifference).getMinutes() < 10) {
-					localTime.textContent =
-						addHoursToDate(now, hourDifference).getHours() +
-						':0' +
-						addMinutesToDate(now, minutesDifference).getMinutes()
-				} else {
-					localTime.textContent =
-						addHoursToDate(now, hourDifference).getHours() + ':' + addMinutesToDate(now, minutesDifference).getMinutes()
+				if (i === 0) {
+					const now = new Date()
+					const shadowParameter = addHoursToDate(now, hourDifference).getHours()
+					changeShade(shadowParameter)
+					if (addMinutesToDate(now, minutesDifference).getMinutes() < 10) {
+						localTime.textContent =
+							addHoursToDate(now, hourDifference).getHours() +
+							':0' +
+							addMinutesToDate(now, minutesDifference).getMinutes()
+					} else {
+						localTime.textContent =
+							addHoursToDate(now, hourDifference).getHours() +
+							':' +
+							addMinutesToDate(now, minutesDifference).getMinutes()
+					}
+				}
+
+				switch (weekDay) {
+					case 0:
+						dayOfTheWeek[i].textContent = 'Sun'
+						break
+					case 1:
+						dayOfTheWeek[i].textContent = 'Mon'
+						break
+					case 2:
+						dayOfTheWeek[i].textContent = 'Tue'
+						break
+					case 3:
+						dayOfTheWeek[i].textContent = 'Wed'
+						break
+					case 4:
+						dayOfTheWeek[i].textContent = 'Thu'
+						break
+					case 5:
+						dayOfTheWeek[i].textContent = 'Fri'
+						break
+					case 6:
+						dayOfTheWeek[i].textContent = 'Sat'
+						break
+
+					default:
+						dayOfTheWeek[i].textContent = 'weekDay'
+						break
 				}
 			}
-
-			switch (weekDay) {
-				case 0:
-					dayOfTheWeek[i].textContent = 'Sun'
-					break
-				case 1:
-					dayOfTheWeek[i].textContent = 'Mon'
-					break
-				case 2:
-					dayOfTheWeek[i].textContent = 'Tue'
-					break
-				case 3:
-					dayOfTheWeek[i].textContent = 'Wed'
-					break
-				case 4:
-					dayOfTheWeek[i].textContent = 'Thu'
-					break
-				case 5:
-					dayOfTheWeek[i].textContent = 'Fri'
-					break
-				case 6:
-					dayOfTheWeek[i].textContent = 'Sat'
-					break
-
-				default:
-					dayOfTheWeek[i].textContent = 'weekDay'
-					break
-			}
-		}
-	})
+		})
+		.catch(() => {
+			unknownError.style.visibility = 'visible'
+		})
 }
 const changeShade = shadowParameter => {
-	console.log(shadowParameter);
 	if (shadowParameter >= 0 && shadowParameter < 3) {
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.8)`} 
-		else if (shadowParameter >= 3 && shadowParameter < 6){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.64)`}
-		else if (shadowParameter >= 6 && shadowParameter < 9){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.48)`}
-		else if (shadowParameter >= 9 && shadowParameter < 11){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.32)`}
-		else if (shadowParameter === 12){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.16)`}
-		else if (shadowParameter >= 13 && shadowParameter < 15){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.32)`}
-		else if (shadowParameter >= 15 && shadowParameter < 18){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.48)`}
-		else if (shadowParameter >= 18 && shadowParameter < 21){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.64)`}
-		else if (shadowParameter >= 21 && shadowParameter < 24){
-		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.8)`}
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.8)`
+	} else if (shadowParameter >= 3 && shadowParameter < 6) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.64)`
+	} else if (shadowParameter >= 6 && shadowParameter < 9) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.48)`
+	} else if (shadowParameter >= 9 && shadowParameter < 11) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.32)`
+	} else if (shadowParameter === 12) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.16)`
+	} else if (shadowParameter >= 13 && shadowParameter < 15) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.32)`
+	} else if (shadowParameter >= 15 && shadowParameter < 18) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.48)`
+	} else if (shadowParameter >= 18 && shadowParameter < 21) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.64)`
+	} else if (shadowParameter >= 21 && shadowParameter < 24) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.8)`
+	}
 }
 
 const handleNextHours = () => {

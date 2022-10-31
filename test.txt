@@ -1,2 +1,0 @@
-do poprawki:
-czas gdy liczba jes np 01 niech wyswietla 01 a nie 1

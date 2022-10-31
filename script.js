@@ -1,3 +1,4 @@
+const shadow = document.querySelector('.shadow')
 const searchInput = document.querySelector('.search-input')
 const searchBtn = document.querySelector('.search-btn')
 const error = document.querySelector('.error')
@@ -31,7 +32,7 @@ const HOURS_WEATHER_LINK = 'https://api.openweathermap.org/data/2.5/forecast?lat
 const TIME_STEP = '&cnt='
 const TIME_STEP_NUMBER = 8 //number of weather bars
 
-const myTimeZone = 7200
+const myTimeZone = 3600
 
 let hoursIndex = 0
 const visibleBars = document.querySelectorAll('.active')
@@ -86,12 +87,8 @@ const getHoursWeather = (lat, lon) => {
 	const HOURS_API_URL = HOURS_WEATHER_LINK + lat + API_LON + lon + TIME_STEP + TIME_STEP_NUMBER + APP_ID + KEY + UNITS
 	axios.get(HOURS_API_URL).then(res => {
 		const localTimeZone = res.data.city.timezone
-		// console.log(res.data)
 		const hourDifference = (localTimeZone - myTimeZone) / 3600
 		const minutesDifference = (localTimeZone - myTimeZone) / 60
-		// console.log(res);
-		console.log(hourDifference)
-		console.log(minutesDifference);
 		for (let i = 0; i < TIME_STEP_NUMBER; i++) {
 			const hour = res.data.list[i].dt
 			const date = new Date(hour * 1000)
@@ -114,7 +111,17 @@ const getHoursWeather = (lat, lon) => {
 
 			if (i === 0) {
 				const now = new Date()
-				localTime.textContent = addHoursToDate(now, hourDifference).getHours() + ':' + addMinutesToDate(now, minutesDifference).getMinutes()
+				const shadowParameter = addHoursToDate(now, hourDifference).getHours()
+				changeShade(shadowParameter)
+				if (addMinutesToDate(now, minutesDifference).getMinutes() < 10) {
+					localTime.textContent =
+						addHoursToDate(now, hourDifference).getHours() +
+						':0' +
+						addMinutesToDate(now, minutesDifference).getMinutes()
+				} else {
+					localTime.textContent =
+						addHoursToDate(now, hourDifference).getHours() + ':' + addMinutesToDate(now, minutesDifference).getMinutes()
+				}
 			}
 
 			switch (weekDay) {
@@ -147,6 +154,27 @@ const getHoursWeather = (lat, lon) => {
 		}
 	})
 }
+const changeShade = shadowParameter => {
+	console.log(shadowParameter);
+	if (shadowParameter >= 0 && shadowParameter < 3) {
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.8)`} 
+		else if (shadowParameter >= 3 && shadowParameter < 6){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.64)`}
+		else if (shadowParameter >= 6 && shadowParameter < 9){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.48)`}
+		else if (shadowParameter >= 9 && shadowParameter < 11){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.32)`}
+		else if (shadowParameter === 12){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.16)`}
+		else if (shadowParameter >= 13 && shadowParameter < 15){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.32)`}
+		else if (shadowParameter >= 15 && shadowParameter < 18){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.48)`}
+		else if (shadowParameter >= 18 && shadowParameter < 21){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.64)`}
+		else if (shadowParameter >= 21 && shadowParameter < 24){
+		shadow.style.backgroundColor = `rgba(0, 0, 0, 0.8)`}
+}
 
 const handleNextHours = () => {
 	if (hoursIndex === weatherBars.length - visibleHoursCount) {
@@ -154,10 +182,8 @@ const handleNextHours = () => {
 	} else {
 		weatherBars[hoursIndex].classList.toggle('active')
 		weatherBars[step].classList.toggle('active')
-
 		hoursIndex++
 		step++
-
 		weatherBars.forEach(bar => {
 			if (bar.classList.contains('active')) {
 				bar.classList.add('move-left')
@@ -166,11 +192,7 @@ const handleNextHours = () => {
 			}
 		})
 	}
-
-	// console.log(hoursIndex)
-	// console.log(step)
 	enable = false
-	console.log(enable)
 	delay = setInterval(letItGo, 1000)
 }
 const handlePreviousHours = () => {
@@ -181,7 +203,6 @@ const handlePreviousHours = () => {
 		step--
 		weatherBars[hoursIndex].classList.toggle('active')
 		weatherBars[step].classList.toggle('active')
-
 		weatherBars.forEach(bar => {
 			if (bar.classList.contains('active')) {
 				bar.classList.add('move-right')
@@ -190,11 +211,7 @@ const handlePreviousHours = () => {
 			}
 		})
 	}
-	// console.log(hoursIndex)
-	// console.log(step)
 	enable = false
-
-	console.log(enable)
 	delay = setInterval(letItGo, 1000)
 }
 
@@ -204,19 +221,11 @@ const letItGo = () => {
 		bar.classList.remove('move-right')
 	})
 	enable = true
-	console.log(enable)
 	clearInterval(delay)
 }
 setTimeout(letItGo, 1000)
 
-// const clearClasses = () => {
-// 	weatherBars.forEach(bar => {
-// 		bar.classList.remove('move-left')
-// 		bar.classList.remove('move-right')
-// 	})
-// }
 nextHoursArrow.addEventListener('click', () => {
-	// clearInterval(delay)
 	if (enable === true) {
 		handleNextHours()
 	} else {
@@ -224,7 +233,6 @@ nextHoursArrow.addEventListener('click', () => {
 	}
 })
 previousHoursArrow.addEventListener('click', () => {
-	// clearInterval(delay)
 	if (enable === true) {
 		handlePreviousHours()
 	} else {
